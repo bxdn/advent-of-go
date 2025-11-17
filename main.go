@@ -50,7 +50,11 @@ func handleSubmission(y, d, p *int, solutions []utils.Solution) {
 		fmt.Printf("Error calculating solution: %v\n", e)
 		return
 	}
-	msg := utils.Unpack(generation.Submit(*y, *d, *p, answer))
+	msg, e := generation.Submit(*y, *d, *p, answer)
+	if e != nil {
+		fmt.Printf("Error submitting solution: %v\n", e)
+		return
+	}
 	fmt.Printf("%s Response: %s\n", solutions[0].Name(), msg)
 }
 
@@ -76,13 +80,22 @@ func handleGeneration(g, i, a *bool, y, d *int) {
 		return
 	}
 	if *g {
-		utils.Must(generation.Generate(*y, *d))
+		if e := generation.Generate(*y, *d); e != nil {
+			fmt.Printf("Error generating solution: %v\n", e)
+			return
+		}
 	}
 	if *i {
-		utils.Must(generation.Input(*y, *d))
+		if e := generation.Input(*y, *d); e != nil {
+			fmt.Printf("Error retrieving input: %v\n", e)
+			return
+		}
 	}
 	if *a {
-		utils.Must(generation.Answers(*y, *d))
+		if e := generation.Answers(*y, *d); e != nil {
+			fmt.Printf("Error retrieving answers: %v\n", e)
+			return
+		}
 	}
 }
 
