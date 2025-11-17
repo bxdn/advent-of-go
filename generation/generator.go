@@ -146,12 +146,21 @@ func addToFunction(d *ast.FuncDecl, day int) {
 }
 
 func createSolutions(year, day int) (bool, error) {
+	// Cache whether the year directory already exists to avoid adding duplicate imports and function calls if it does
 	dirName := fmt.Sprintf("solutions/%d/day%d", year, day)
 	info, e := os.Stat(fmt.Sprintf("solutions/%d", year))
 	if e != nil && !os.IsNotExist(e) {
 		return false, fmt.Errorf("error checking if year directory exists: %w", e)
 	}
 	yearDirExists := !os.IsNotExist(e) && info.IsDir()
+
+	// Check if the solution directory already exists
+	if _, e = os.Stat(dirName); e == nil {
+		return yearDirExists, fmt.Errorf("solution already exists for year %d day %d", year, day)
+	} else if !os.IsNotExist(e) {
+		return yearDirExists, fmt.Errorf("error checking if solution directory exists: %w", e)
+	}
+
 	if e := os.MkdirAll(dirName, 0777); e != nil {
 		return false, fmt.Errorf("error creating solutions directory: %w", e)
 	}

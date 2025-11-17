@@ -48,6 +48,7 @@ func runInit() error {
 		return e
 	}
 	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("Please enter your session cookie: ")
 	scanner.Scan()
 	cookie := strings.TrimSpace(scanner.Text())
 	if e := scanner.Err(); e != nil {

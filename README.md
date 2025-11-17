@@ -3,7 +3,7 @@
 ## What is Advent of Go?
 
 Advent of Go is a multi-year framework for [Advent of Code](https://adventofcode.com/), a festive programming advent calendar!
-It can house all your solutions in an easy and organized layout, and comes with a built-in testing suite and scaffolding that automatically pulls in your input, answers, and stubs out solutions.
+It can house all your solutions in an easy and organized layout, and comes with built-in functionality that allows you to generate solutions stubs, pull input data, print results, submit answers, and pull available answers and test against them.
 
 ## Installation
 
@@ -11,10 +11,7 @@ It can house all your solutions in an easy and organized layout, and comes with 
 1. If you would like to keep your solutions up to date on github, fork the repository first
 1. Run `git clone github.com/bxdn/advent-of-go` Or `git clone <Your forked repo>`
 1. Run `cd advent-of-go`
-1. You will need to do the following steps if you want to use any of the automatic functionality interfacing with Advent of Code (Pulling answers or input data and submitting answers)
-1. Open `private/cookie.txt`
-1. Paste your authentication session cookie from advent of code (you can find it in your browser once you've logged in).
-1. Save the file.
+1. The first time you run, you will be asked to paste your session cookie from Advent of Code (you can find it in your browser once you've logged in).
 1. That's it!
 
 ## Usage
