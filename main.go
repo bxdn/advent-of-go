@@ -82,19 +82,16 @@ func handleGeneration(g, i, a *bool, y, d *int) {
 	if *g {
 		if e := generation.Generate(*y, *d); e != nil {
 			fmt.Printf("Error generating solution: %v\n", e)
-			return
 		}
 	}
 	if *i {
 		if e := generation.Input(*y, *d); e != nil {
 			fmt.Printf("Error retrieving input: %v\n", e)
-			return
 		}
 	}
 	if *a {
 		if e := generation.Answers(*y, *d); e != nil {
 			fmt.Printf("Error retrieving answers: %v\n", e)
-			return
 		}
 	}
 }

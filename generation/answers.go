@@ -32,8 +32,12 @@ func Answers(year, day int) error {
 	defer res.Body.Close()
 
 	answers, e := ArticleParagraphCodes(res.Body)
-	if e != nil || len(answers) != 2 {
+	if e != nil {
 		return fmt.Errorf("error extracting answers: %w", e)
+	}
+
+	if len(answers) > 2 {
+		return fmt.Errorf("error: more than 2 answers found for year %d day %d, this should not be possible, perhaps the html of the site changed?", year, day)
 	}
 
 	var answersInFile map[string]any
