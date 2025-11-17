@@ -65,3 +65,27 @@ func ArticleParagraphCodes(r io.Reader) ([]string, error) {
 	e = walk(doc)
 	return results, e
 }
+
+func ArticleParagraphText(r io.Reader) (string, error) {
+	doc, e := html.Parse(r)
+	if e != nil {
+		return "", e
+	}
+
+	var walk func(*html.Node) (string, error)
+	walk = func(n *html.Node) (string, error) {
+		if n.Type == html.ElementNode && n.Data == "article" {
+			return n.FirstChild.FirstChild.Data, nil
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			if s, e := walk(c); e != nil {
+				return "", e
+			} else if s != "" {
+				return s, nil
+			}
+		}
+		return "", nil
+	}
+
+	return walk(doc)
+}
