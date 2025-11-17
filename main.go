@@ -51,17 +51,13 @@ func handleSubmission(y, d, p *int, solutions []utils.Solution) {
 		fmt.Printf("Error: expected exactly one solution to submit, but found %d\n", len(solutions))
 		return
 	}
-	answer, e := solutions[0].Calculate()
-	if e != nil {
-		fmt.Printf("Error calculating solution: %v\n", e)
-		return
-	}
-	msg, e := generation.Submit(*y, *d, *p, answer)
+	solution := solutions[0]
+	msg, e := generation.Submit(*y, *d, *p, solution)
 	if e != nil {
 		fmt.Printf("Error submitting solution: %v\n", e)
 		return
 	}
-	fmt.Printf("%s Response: %s\n", solutions[0].Name(), msg)
+	fmt.Printf("%s Response: %s\n", solution.Name(), msg)
 }
 
 func handleTesting(solutions []utils.Solution, q *bool) {

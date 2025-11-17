@@ -15,7 +15,7 @@ func Answers(year, day int) error {
 		return fmt.Errorf("error creating/sending request: %w", e)
 	}
 	defer res.Body.Close()
-	answers, e := ArticleParagraphCodes(res.Body)
+	answers, e := articleParagraphCodes(res.Body)
 	if e != nil {
 		return fmt.Errorf("error extracting answers: %w", e)
 	}

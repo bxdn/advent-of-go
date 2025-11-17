@@ -37,7 +37,7 @@ func nextElementSibling(n *html.Node) *html.Node {
 	return nil
 }
 
-func ArticleParagraphCodes(r io.Reader) ([]string, error) {
+func articleParagraphCodes(r io.Reader) ([]string, error) {
 	doc, e := html.Parse(r)
 	if e != nil {
 		return nil, e
@@ -78,7 +78,7 @@ func ArticleParagraphCodes(r io.Reader) ([]string, error) {
 	return results, e
 }
 
-func ArticleParagraphText(r io.Reader) (string, error) {
+func articleParagraphText(r io.Reader) (string, error) {
 	doc, e := html.Parse(r)
 	if e != nil {
 		return "", e
