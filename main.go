@@ -4,11 +4,8 @@ import (
 	"advent-of-go/generation"
 	"advent-of-go/solutions"
 	"advent-of-go/utils"
-	"bufio"
 	"flag"
 	"fmt"
-	"os"
-	"strings"
 )
 
 func main() {
@@ -24,7 +21,10 @@ func main() {
 
 	flag.Parse()
 
-	runInit()
+	if e := runInit(); e != nil {
+		fmt.Printf("Error initializing: %v\n", e)
+		return
+	}
 
 	if *g || *i || *a {
 		handleGeneration(g, i, a, y, d)
@@ -42,42 +42,6 @@ func main() {
 	}
 }
 
-func runInit() error {
-	_, e := os.Stat("private")
-	if e == nil || !os.IsNotExist(e) {
-		return e
-	}
-	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Print("Please enter your session cookie: ")
-	scanner.Scan()
-	cookie := strings.TrimSpace(scanner.Text())
-	if e := scanner.Err(); e != nil {
-		return fmt.Errorf("error reading cookie from stdin: %w", e)
-	}
-	if e := os.Mkdir("private", 0700); e != nil {
-		return fmt.Errorf("error creating private directory: %w", e)
-	}
-	cookieFile, e := os.Create("private/cookie.txt")
-	if e != nil {
-		return fmt.Errorf("error creating cookie file: %w", e)
-	}
-	defer cookieFile.Close()
-	_, e = cookieFile.WriteString(cookie)
-	if e != nil {
-		return fmt.Errorf("error writing cookie to file: %w", e)
-	}
-	answersFile, e := os.Create("private/answers.json")
-	if e != nil {
-		return fmt.Errorf("error creating answers file: %w", e)
-	}
-	defer answersFile.Close()
-	_, e = answersFile.WriteString("{}")
-	if e != nil {
-		return fmt.Errorf("error writing empty answers to file: %w", e)
-	}
-	return nil
-}
-
 func handleSubmission(y, d, p *int, solutions []utils.Solution) {
 	if *y == -1 || *d == -1 || *p == -1 {
 		flag.PrintDefaults()
@@ -85,6 +49,7 @@ func handleSubmission(y, d, p *int, solutions []utils.Solution) {
 	}
 	if len(solutions) != 1 {
 		fmt.Printf("Error: expected exactly one solution to submit, but found %d\n", len(solutions))
+		return
 	}
 	answer, e := solutions[0].Calculate()
 	if e != nil {
