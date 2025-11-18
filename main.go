@@ -37,14 +37,25 @@ func main() {
 		handleGeneration(g, i, a, y, d)
 		return
 	}
-	filteredSolutions := getFilteredSolutions(y, d, p)
+
+	solutions := solutions.Solutions()
+	if len(solutions) == 0 {
+		fmt.Println("No solutions found! Are you sure you have implemented any solutions?")
+		return
+	}
+	filteredSolutions := getFilteredSolutions(solutions, y, d, p)
+	if len(filteredSolutions) == 0 {
+		println("No solutions found matching your criteria! Perhaps your filter is too strict. (Are you using incorrect -y -d -p -n flags?)")
+		return
+	}
+
 	if *s {
 		handleSubmission(y, d, p, filteredSolutions)
 	} else if *t || *q {
 		handleTesting(filteredSolutions, q)
 	} else {
 		for _, s := range filteredSolutions {
-			printSolution(s)
+			printSolutionResults(s)
 		}
 	}
 }
@@ -118,21 +129,20 @@ func handleGeneration(g, i, a *bool, y, d *int) {
 	}
 }
 
-func getFilteredSolutions(y, d, p *int) []utils.Solution {
-	solutionsToPrint := solutions.Solutions()
+func getFilteredSolutions(solutions []utils.Solution, y, d, p *int) []utils.Solution {
 	if *y != -1 {
-		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool { return s.Year == *y })
+		solutions = filter(solutions, func(s utils.Solution) bool { return s.Year == *y })
 	}
 	if *d != -1 {
-		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool { return s.Day == *d })
+		solutions = filter(solutions, func(s utils.Solution) bool { return s.Day == *d })
 	}
 	if *p != -1 {
-		solutionsToPrint = filter(solutionsToPrint, func(s utils.Solution) bool { return s.Part == *p })
+		solutions = filter(solutions, func(s utils.Solution) bool { return s.Part == *p })
 	}
-	return solutionsToPrint
+	return solutions
 }
 
-func printSolution(s utils.Solution) {
+func printSolutionResults(s utils.Solution) {
 	fmt.Printf("%s: %s\n", s.Name(), stringifyRes(s.Calculate()))
 }
 
