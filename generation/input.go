@@ -15,6 +15,16 @@ func Input(year, day int) error {
 		return fmt.Errorf("error creating/sending request: %w", e)
 	}
 	defer res.Body.Close()
+	if res.StatusCode != http.StatusOK {
+		switch res.StatusCode {
+		case http.StatusNotFound:
+			return fmt.Errorf("error: input not found for year %d day %d, perhaps the day has not been released yet?", year, day)
+		case http.StatusBadRequest:
+			return fmt.Errorf("error: bad request for year %d day %d, perhaps your cookie is invalid?", year, day)
+		default:
+			return fmt.Errorf("error: bad status code: %d", res.StatusCode)
+		}
+	}
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err

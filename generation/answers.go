@@ -15,12 +15,20 @@ func Answers(year, day int) error {
 		return fmt.Errorf("error creating/sending request: %w", e)
 	}
 	defer res.Body.Close()
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusNotFound {
+			return fmt.Errorf("error: page not found for year %d day %d, perhaps the day has not been released yet?", year, day)
+		}
+		return fmt.Errorf("error: bad status code: %d", res.StatusCode)
+	}
 	answers, e := articleParagraphCodes(res.Body)
 	if e != nil {
 		return fmt.Errorf("error extracting answers: %w", e)
 	}
 	if len(answers) > 2 {
 		return fmt.Errorf("error: more than 2 answers found for year %d day %d, this should not be possible, perhaps the html of the site changed?", year, day)
+	} else if len(answers) == 0 {
+		return fmt.Errorf("error: no answers found for year %d day %d, have you submitted a solution?", year, day)
 	}
 	return saveAnswers(year, day, answers)
 }

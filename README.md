@@ -23,6 +23,8 @@ However, you wouldn't need a framework to accomplish that.
 
 If you, for instance, wanted to print only year 2019 day 5 part 2, you could run `go run . -y 2019 -d 5 -p 2`
 
+As a shorthand, you can also use `-n` (now) if you want to use the current day and year. 
+
 ### Generating Solution Stubs
 In order to stub out a day of Advent of Go, provide the `-g` flag with the `-y` and `-d` flags, to provide a year and day.
 
@@ -35,12 +37,16 @@ To make input data available to your solutions when run, provide the `i` flag. S
 
 So, to both generate stubs for 2021 day 19 and pull in the input data, you could run `go run . -g -i -y 2021 -d 19`
 
+Or, more commonly, if today were actually December 19, 2021, you could run `go run . -g -i -n` to (g)enerate the stubs and grab the (i)nput for the puzzle corresponding to (n)ow
+
 ### Submitting
 To submit a solution after implementation, use the `-s` flag. You will need the `-y`, `-d`, and `-p` flags to specify a solution to submit. 
 
 The solution will be run and automatically submitted to Advent of Code, and the message in the response page will be printed.
 
 So, once you have created your solution for year 2023 day 10 part 1, you could submit that solution with `go run . -s -y 2023 -d 10 -p 1`
+
+Again, you could also run `go run . -s -n -p 1` to (s)ubmit (p)art 1's solution for the puzzle corresponding to (n)ow
 
 ### Pulling Answers to Test Against
 Important: You can only pull answers after successfully submitting in the Advent of Code website or through Advent of Go.

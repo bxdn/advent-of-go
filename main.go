@@ -6,6 +6,7 @@ import (
 	"advent-of-go/utils"
 	"flag"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -18,8 +19,14 @@ func main() {
 	i := flag.Bool("i", false, "Use to retrieve input and place it in the correct spot, needs year and day flags to work")
 	a := flag.Bool("a", false, "Use to retrieve answers and place them in the correct spot, needs year and day flags to work")
 	s := flag.Bool("s", false, "Use to submit a solution, needs year, day and part flags to work")
+	n := flag.Bool("n", false, "Use to use the current day and year for the year and day flags (only works in December)")
 
 	flag.Parse()
+
+	if e := processTimeFlags(y, d, n); e != nil {
+		fmt.Printf("%v\n", e)
+		return
+	}
 
 	if e := runInit(); e != nil {
 		fmt.Printf("Error initializing: %v\n", e)
@@ -40,6 +47,19 @@ func main() {
 			printSolution(s)
 		}
 	}
+}
+
+func processTimeFlags(y, d *int, n *bool) error {
+	if !*n {
+		return nil
+	}
+	year, month, day := time.Now().Date()
+	if month != time.December {
+		return fmt.Errorf("error: -n flag can only be used in December")
+	}
+	*y = year
+	*d = day
+	return nil
 }
 
 func handleSubmission(y, d, p *int, solutions []utils.Solution) {
