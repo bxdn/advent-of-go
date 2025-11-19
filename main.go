@@ -16,14 +16,12 @@ func main() {
 	t := flag.Bool("t", false, "Use to only test against known answers")
 	q := flag.Bool("q", false, "Use to test in quiet mode (only failures logged)")
 	g := flag.Bool("g", false, "Use to generate new solution set, needs year and day flags to work")
-	i := flag.Bool("i", false, "Use to retrieve input and place it in the correct spot, needs year and day flags to work")
-	a := flag.Bool("a", false, "Use to retrieve answers and place them in the correct spot, needs year and day flags to work")
 	s := flag.Bool("s", false, "Use to submit a solution, needs year, day and part flags to work")
 	n := flag.Bool("n", false, "Use to use the current day and year for the year and day flags (only works in December)")
 
 	flag.Parse()
 
-	if e := processTimeFlags(y, d, n); e != nil {
+	if e := processNowFlag(y, d, n); e != nil {
 		fmt.Printf("%v\n", e)
 		return
 	}
@@ -33,8 +31,8 @@ func main() {
 		return
 	}
 
-	if *g || *i || *a {
-		handleGeneration(g, i, a, y, d)
+	if *g {
+		handleGeneration(y, d)
 		return
 	}
 
@@ -49,18 +47,25 @@ func main() {
 		return
 	}
 
-	if *s {
-		handleSubmission(y, d, p, filteredSolutions)
-	} else if *t || *q {
-		handleTesting(filteredSolutions, q)
-	} else {
+	handleInput(filteredSolutions)
+
+	// standard print command if no other flags are set
+	if !*s && !*t && !*q {
 		for _, s := range filteredSolutions {
 			printSolutionResults(s)
 		}
+		return
+	}
+
+	if *s {
+		handleSubmission(y, d, p, filteredSolutions)
+	}
+	if *t || *q {
+		handleTesting(filteredSolutions, q)
 	}
 }
 
-func processTimeFlags(y, d *int, n *bool) error {
+func processNowFlag(y, d *int, n *bool) error {
 	if !*n {
 		return nil
 	}
@@ -92,6 +97,11 @@ func handleSubmission(y, d, p *int, solutions []utils.Solution) {
 }
 
 func handleTesting(solutions []utils.Solution, q *bool) {
+	if ok := handleAnswers(solutions); !ok {
+		fmt.Printf("Error retrieving answers, cannot run tests!\n")
+		return
+	}
+	fmt.Println("Results:")
 	passed, failed := 0, 0
 	for _, r := range testSolutions(solutions) {
 		if r.err != nil {
@@ -107,26 +117,36 @@ func handleTesting(solutions []utils.Solution, q *bool) {
 	fmt.Printf("Passed: %d - Failed: %d\n", passed, failed)
 }
 
-func handleGeneration(g, i, a *bool, y, d *int) {
+func handleGeneration(y, d *int) {
 	if *y == -1 || *d == -1 {
-		flag.PrintDefaults()
-		return
-	}
-	if *g {
+		fmt.Println("Error: -g flag requires -y and -d flags to be set (or -n)")
+	} else {
 		if e := generation.Generate(*y, *d); e != nil {
 			fmt.Printf("Error generating solution: %v\n", e)
+			return
 		}
+		fmt.Printf("Successfully generated solution for year %d day %d\n", *y, *d)
 	}
-	if *i {
-		if e := generation.Input(*y, *d); e != nil {
-			fmt.Printf("Error retrieving input: %v\n", e)
-		}
+}
+
+func handleInput(solutions []utils.Solution) {
+	if ok := generation.AllInput(solutions); !ok {
+		fmt.Printf("Finished pulling input with errors!\n")
+	} else {
+		fmt.Printf("Successfully retrieved input!\n")
 	}
-	if *a {
-		if e := generation.Answers(*y, *d); e != nil {
-			fmt.Printf("Error retrieving answers: %v\n", e)
-		}
+}
+
+func handleAnswers(solutions []utils.Solution) bool {
+	if ok, e := generation.AllAnswers(solutions); e != nil {
+		fmt.Printf("Error retrieving answers: %v\n", e)
+		return false
+	} else if !ok {
+		fmt.Printf("Finished pulling answers with errors!\n")
+	} else {
+		fmt.Printf("Successfully retrieved answers!\n")
 	}
+	return true
 }
 
 func getFilteredSolutions(solutions []utils.Solution, y, d, p *int) []utils.Solution {
